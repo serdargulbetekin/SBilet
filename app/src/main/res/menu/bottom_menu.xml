@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/busFragment"
+        android:icon="@drawable/icon_bus"
+        android:title="@string/Otobus_Bileti" />
+    <item
+        android:id="@+id/planeFragment"
+        android:icon="@drawable/icon_plane"
+        android:title="@string/Ucak_Bileti" />
+
+</menu>

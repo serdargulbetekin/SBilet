@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SBilet</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Otobus_Bileti">Otobüs Bileti</string>
+    <string name="Ucak_Bileti">Uçak Bileti</string>
+    <string name="Nereden">Nereden</string>
+    <string name="Nereye">Nereye</string>
+    <string name="Tarih">Tarih</string>
+    <string name="Bugün">Bugün</string>
+    <string name="Yarin">Yarın</string>
+    <string name="KALKIS">KALKIŞ</string>
+    <string name="VARIS">VARIŞ</string>
+</resources>

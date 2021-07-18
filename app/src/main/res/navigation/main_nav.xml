@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/busFragment">
+
+    <fragment
+        android:id="@+id/busFragment"
+        android:name="com.example.sbilet.modules.main.bus.BusFragment"
+        android:label="fragment_bus"
+        tools:layout="@layout/fragment_bus">
+        <action
+            android:id="@+id/action_busFragment_to_planeFragment"
+            app:destination="@id/planeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/planeFragment"
+        android:name="com.example.sbilet.modules.main.plane.PlaneFragment"
+        android:label="fragment_plane"
+        tools:layout="@layout/fragment_plane">
+        <action
+            android:id="@+id/action_planeFragment_to_busFragment"
+            app:destination="@id/busFragment" />
+    </fragment>
+</navigation>
