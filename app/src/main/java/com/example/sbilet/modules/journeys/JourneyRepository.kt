@@ -64,6 +64,8 @@ class JourneyRepository(private val sBiletReqeustExecutor: SBiletReqeustExecutor
                 )
             }
         }
-        return journeyList.toList()
+        return journeyList.toList().sortedByDescending {
+            it.departure.toString()
+        }
     }
 }
