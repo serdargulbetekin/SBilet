@@ -1,6 +1,7 @@
 package com.example.sbilet.modules.main.bus
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -60,6 +61,21 @@ class BusFragment : Fragment() {
             }
         })
 
+        viewModel.errorMessage.observe(this, {
+            Toast.makeText(
+                this.requireContext(),
+                it,
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+
+        viewModel.fromLocation.observe(this, {
+            viewBinding.textViewFrom.text = it?.name
+        })
+        viewModel.toLocation.observe(this, {
+            viewBinding.textViewTo.text = it?.name
+        })
+
         viewModel.shouldContinueTriple.observe(
             this,
             { (shouldContinue, errorMessage, journeyItem) ->
@@ -84,7 +100,6 @@ class BusFragment : Fragment() {
                         it,
                         onSelect = { busPlaneLocationItem ->
                             viewModel.onSelectFrom(busPlaneLocationItem)
-                            textViewFrom.text = busPlaneLocationItem.name
                         }).show()
                 })
             }
@@ -96,7 +111,6 @@ class BusFragment : Fragment() {
                         it,
                         onSelect = { busPlaneLocationItem ->
                             viewModel.onSelectTo(busPlaneLocationItem)
-                            textViewTo.text = busPlaneLocationItem.name
                         }).show()
                 })
             }

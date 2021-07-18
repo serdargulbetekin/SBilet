@@ -1,13 +1,12 @@
 package com.example.sbilet.modules.main.bus
 
 import android.annotation.SuppressLint
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.sbilet.modules.journeys.LocationJourneyItem
 import com.example.sbilet.util.SbiletDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
 
 @SuppressLint("CheckResult")
@@ -19,6 +18,10 @@ class BusViewModel @Inject constructor(
     private val _progress = MutableLiveData<Boolean>()
     val progress: LiveData<Boolean>
         get() = _progress
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String>
+        get() = _errorMessage
 
     private val _locationItem = MutableLiveData<List<BusPlaneLocationItem>>()
     val locationItem: LiveData<List<BusPlaneLocationItem>>
@@ -34,14 +37,21 @@ class BusViewModel @Inject constructor(
     val sBiletDepartureDate: LiveData<SbiletDate>
         get() = _sBiletDepartureDate
 
-    private var fromLocation: BusPlaneLocationItem? = null
-    private var toLocation: BusPlaneLocationItem? = null
+    private val _fromLocation = MutableLiveData<BusPlaneLocationItem?>()
+    val fromLocation: LiveData<BusPlaneLocationItem?>
+        get() = _fromLocation
+
+    private val _toLocation = MutableLiveData<BusPlaneLocationItem?>()
+    val toLocation: LiveData<BusPlaneLocationItem?>
+        get() = _toLocation
 
     private val sBiletDateToday = SbiletDate.today()
     private val sBiletDateTomorrow = SbiletDate.tomorrow()
 
     init {
         _progress.postValue(true)
+        _fromLocation.postValue(null)
+        _toLocation.postValue(null)
         _sBiletDepartureDate.postValue(sBiletDateTomorrow)
         busRepository.getLocations()
             .subscribe({
@@ -53,11 +63,19 @@ class BusViewModel @Inject constructor(
     }
 
     fun onSelectFrom(fromLocation: BusPlaneLocationItem) {
-        this.fromLocation = fromLocation
+        if (this.toLocation.value?.id == fromLocation.id) {
+            _errorMessage.postValue("Başlangıç ve varış noktaları aynı olamaz")
+        } else {
+            _fromLocation.postValue(fromLocation)
+        }
     }
 
     fun onSelectTo(toLocation: BusPlaneLocationItem) {
-        this.toLocation = toLocation
+        if (this.fromLocation.value?.id == toLocation.id) {
+            _errorMessage.postValue("Başlangıç ve varış noktaları aynı olamaz")
+        } else {
+            _toLocation.postValue(toLocation)
+        }
     }
 
     fun setDate(sbiletDate: SbiletDate) {
@@ -77,14 +95,14 @@ class BusViewModel @Inject constructor(
 
     fun onClickFindTicket() {
         when {
-            fromLocation == null -> {
+            fromLocation.value == null -> {
                 _shouldContinueTriple.postValue(
                     Triple(
                         false, "Başlangıç noktasını seçmediniz.", null
                     )
                 )
             }
-            toLocation == null -> {
+            toLocation.value == null -> {
                 _shouldContinueTriple.postValue(
                     Triple(
                         false, "Varış noktasını seçmediniz.", null
@@ -96,8 +114,8 @@ class BusViewModel @Inject constructor(
                     Triple(
                         true, "",
                         LocationJourneyItem(
-                            fromLocation!!,
-                            toLocation!!,
+                            fromLocation.value!!,
+                            toLocation.value!!,
                             sBiletDepartureDate.value!!
                         )
                     )
@@ -112,9 +130,3 @@ class BusViewModel @Inject constructor(
     }
 }
 
-@Parcelize
-data class LocationJourneyItem(
-    val from: BusPlaneLocationItem,
-    val to: BusPlaneLocationItem,
-    val date: SbiletDate
-) : Parcelable

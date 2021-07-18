@@ -11,4 +11,7 @@
     <string name="Yarin">Yarın</string>
     <string name="KALKIS">KALKIŞ</string>
     <string name="VARIS">VARIŞ</string>
+    <string name="Gidis">Gidiş</string>
+    <string name="Donus">Dönüş</string>
+    <string name="Yolcu_Ekle">Yolcu Ekle</string>
 </resources>

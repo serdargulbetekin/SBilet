@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sbilet.databinding.ActivityJourneyBinding
-import com.example.sbilet.modules.main.bus.LocationJourneyItem
 import com.example.sbilet.util.getUIDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_journey.*

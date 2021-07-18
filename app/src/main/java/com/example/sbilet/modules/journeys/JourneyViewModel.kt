@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.sbilet.modules.journeys.JourneyActivity.Companion.EXTRAS_LOCATION_JOURNEY
-import com.example.sbilet.modules.main.bus.LocationJourneyItem
-import dagger.BindsInstance
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -15,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class JourneyViewModel @Inject constructor(
     journeyRepository: JourneyRepository,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _locationJourneyItem =
