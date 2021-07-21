@@ -108,5 +108,9 @@ class PlaneViewModel @Inject constructor(
             }
         }
     }
+
+    companion object {
+        const val SP_PLANE_QUERY = "SP_PLANE_QUERY"
+    }
 }
 

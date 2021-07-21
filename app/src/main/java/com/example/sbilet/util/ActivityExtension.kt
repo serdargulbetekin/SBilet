@@ -3,13 +3,14 @@ package com.example.sbilet.util
 import android.app.Activity
 import android.app.DatePickerDialog
 import androidx.fragment.app.Fragment
+import com.example.sbilet.modules.main.bus.DateType
 import java.util.*
 
 
 fun Activity.showDatePickerDialog(
     minDate: Calendar? = null,
     maxDate: Calendar? = null,
-    listener: (SbiletDate) -> Unit
+    listener: (Pair<SbiletDate, DateType>) -> Unit
 ) {
 
     val instance = Calendar.getInstance().apply {
@@ -21,7 +22,19 @@ fun Activity.showDatePickerDialog(
         0,
         { _, year, month, day ->
             val sbiletDate = SbiletDate(day, month + 1, year, "00", "00", "00")
-            listener.invoke(sbiletDate)
+            val dateType = if (
+                instance.get(Calendar.YEAR) == year &&
+                instance.get(Calendar.MONTH) == month &&
+                instance.get(Calendar.DAY_OF_MONTH) == day
+            ) DateType.TODAY
+            else if (
+                instance.get(Calendar.YEAR) == year &&
+                instance.get(Calendar.MONTH) == month &&
+                instance.get(Calendar.DAY_OF_MONTH)+1 == day
+            ) DateType.TOMORROW
+            else DateType.NONE
+
+            listener.invoke(sbiletDate to dateType)
         },
         instance.get(Calendar.YEAR),
         instance.get(Calendar.MONTH),
@@ -41,7 +54,7 @@ fun Activity.showDatePickerDialog(
 fun Fragment.showDatePickerDialog(
     minDate: Calendar? = null,
     maxDate: Calendar? = null,
-    listener: (SbiletDate) -> Unit
+    listener: (Pair<SbiletDate, DateType>) -> Unit
 ) {
     this.activity?.showDatePickerDialog(minDate, maxDate, listener)
 }

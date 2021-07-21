@@ -18,7 +18,14 @@ data class SbiletDate(
     }
 
 
+    fun isEqual(sbiletDate: SbiletDate): Boolean {
+        return sbiletDate.day == day && sbiletDate.month == month && sbiletDate.year == year
+    }
+
+
     companion object {
+
+
         fun today(): SbiletDate {
             val instance = Calendar.getInstance().apply {
                 timeZone = TimeZone.getTimeZone("GMT+3")

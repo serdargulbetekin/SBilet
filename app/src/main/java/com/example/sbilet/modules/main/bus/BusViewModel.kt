@@ -5,14 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sbilet.modules.journeys.LocationJourneyItem
+import com.example.sbilet.util.QueryPreferencesHelper
 import com.example.sbilet.util.SbiletDate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.*
 import javax.inject.Inject
 
 @SuppressLint("CheckResult")
 @HiltViewModel
 class BusViewModel @Inject constructor(
-    busRepository: BusRepository
+    busRepository: BusRepository,
+    private val queryPreferencesHelper: QueryPreferencesHelper,
 ) : ViewModel() {
 
     private val _progress = MutableLiveData<Boolean>()
@@ -33,8 +36,8 @@ class BusViewModel @Inject constructor(
         get() = _shouldContinueTriple
 
 
-    private val _sBiletDepartureDate = MutableLiveData<SbiletDate>()
-    val sBiletDepartureDate: LiveData<SbiletDate>
+    private val _sBiletDepartureDate = MutableLiveData<Pair<SbiletDate, DateType>>()
+    val sBiletDepartureDate: LiveData<Pair<SbiletDate, DateType>>
         get() = _sBiletDepartureDate
 
     private val _fromLocation = MutableLiveData<BusPlaneLocationItem?>()
@@ -49,10 +52,8 @@ class BusViewModel @Inject constructor(
     private val sBiletDateTomorrow = SbiletDate.tomorrow()
 
     init {
+        checkIfQueryExist()
         _progress.postValue(true)
-        _fromLocation.postValue(null)
-        _toLocation.postValue(null)
-        _sBiletDepartureDate.postValue(sBiletDateTomorrow)
         busRepository.getLocations()
             .subscribe({
                 _progress.postValue(false)
@@ -78,17 +79,20 @@ class BusViewModel @Inject constructor(
         }
     }
 
-    fun setDate(sbiletDate: SbiletDate) {
-        _sBiletDepartureDate.postValue(sbiletDate)
+    fun setDate(sbiletDate: SbiletDate, dateType: DateType) {
+        _sBiletDepartureDate.postValue(sbiletDate to dateType)
     }
 
     fun onFastDateClick(dateType: DateType) {
         when (dateType) {
             DateType.TODAY -> {
-                setDate(sBiletDateToday)
+                setDate(sBiletDateToday, dateType)
             }
             DateType.TOMORROW -> {
-                setDate(sBiletDateTomorrow)
+                setDate(sBiletDateTomorrow, dateType)
+            }
+            DateType.NONE -> {
+                setDate(sBiletDateTomorrow, dateType)
             }
         }
     }
@@ -110,23 +114,60 @@ class BusViewModel @Inject constructor(
                 )
             }
             else -> {
+                val locationJourneyItem = LocationJourneyItem(
+                    fromLocation.value!!,
+                    toLocation.value!!,
+                    sBiletDepartureDate.value!!.first
+                )
                 _shouldContinueTriple.postValue(
                     Triple(
-                        true, "",
-                        LocationJourneyItem(
-                            fromLocation.value!!,
-                            toLocation.value!!,
-                            sBiletDepartureDate.value!!
-                        )
+                        true,
+                        "",
+                        locationJourneyItem
                     )
                 )
+                saveBusQuery(locationJourneyItem)
             }
         }
     }
 
+    private fun saveBusQuery(locationJourneyItem: LocationJourneyItem) {
+        queryPreferencesHelper.setBusQuery(locationJourneyItem)
+    }
+
+    private fun getBusQuery() = queryPreferencesHelper.getBusQuery()
+
+    private fun checkIfQueryExist() {
+        val busQuery = getBusQuery()
+        if (busQuery != null) {
+            _fromLocation.postValue(busQuery.from)
+            _toLocation.postValue(busQuery.to)
+            _sBiletDepartureDate.postValue(busQuery.date to getDateType(busQuery.date))
+        } else {
+            _fromLocation.postValue(null)
+            _toLocation.postValue(null)
+            _sBiletDepartureDate.postValue(sBiletDateTomorrow to DateType.TOMORROW)
+        }
+    }
+
+    private fun getDateType(sbiletDate: SbiletDate): DateType {
+        return when {
+            sbiletDate.isEqual(sBiletDateToday) -> {
+                DateType.TODAY
+            }
+            sbiletDate.isEqual(sBiletDateTomorrow) -> {
+                DateType.TOMORROW
+            }
+            else -> {
+                DateType.NONE
+            }
+        }
+    }
 
     companion object {
         var CACHED_DATA: List<BusPlaneLocationItem>? = null
+        const val SP_BUS_QUERY = "SP_BUS_QUERY"
+
     }
 }
 

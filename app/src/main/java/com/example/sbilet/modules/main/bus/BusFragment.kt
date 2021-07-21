@@ -1,12 +1,11 @@
 package com.example.sbilet.modules.main.bus
 
 import android.os.Bundle
-import android.os.Handler
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.sbilet.R
 import com.example.sbilet.databinding.FragmentBusBinding
@@ -15,7 +14,6 @@ import com.example.sbilet.uikit.locationselection.LocationSelectionDialog
 import com.example.sbilet.util.setTextColorRes
 import com.example.sbilet.util.showDatePickerDialog
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDateTime
 import java.util.*
 
 private const val ARG_PARAM1 = "param1"
@@ -50,7 +48,8 @@ class BusFragment : Fragment() {
         }
 
         viewModel.sBiletDepartureDate.observe(this, {
-            viewBinding.textViewDate.text = it.toString()
+            viewBinding.textViewDate.text = it.first.toString()
+            arrangeColor(it.second)
         })
 
         viewModel.progress.observe(this, {
@@ -117,7 +116,7 @@ class BusFragment : Fragment() {
 
             linearLayoutDate.setOnClickListener {
                 showDatePickerDialog(minDate = Calendar.getInstance()) {
-                    viewModel.setDate(it)
+                    viewModel.setDate(it.first, it.second)
                     textViewDate.text = it.toString()
                 }
             }
@@ -125,10 +124,7 @@ class BusFragment : Fragment() {
             textViewFindTicket.setOnClickListener {
                 viewModel.onClickFindTicket()
             }
-
         }
-
-
     }
 
     override fun onCreateView(
@@ -150,6 +146,12 @@ class BusFragment : Fragment() {
                 viewBinding.textViewToday.setBackgroundResource(R.drawable.shape_rectangle_grey_radius_5_stroke)
                 viewBinding.textViewToday.setTextColorRes(R.color.dark_grey)
             }
+            DateType.NONE -> {
+                viewBinding.textViewTomorrow.setBackgroundResource(R.drawable.shape_rectangle_grey_radius_5_stroke)
+                viewBinding.textViewTomorrow.setTextColorRes(R.color.dark_grey)
+                viewBinding.textViewToday.setBackgroundResource(R.drawable.shape_rectangle_grey_radius_5_stroke)
+                viewBinding.textViewToday.setTextColorRes(R.color.dark_grey)
+            }
         }
 
     }
@@ -168,5 +170,5 @@ class BusFragment : Fragment() {
 }
 
 enum class DateType {
-    TODAY, TOMORROW
+    TODAY, TOMORROW, NONE
 }
