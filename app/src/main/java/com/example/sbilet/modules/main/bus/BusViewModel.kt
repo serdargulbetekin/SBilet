@@ -5,8 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sbilet.modules.journeys.LocationJourneyItem
-import com.example.sbilet.util.QueryPreferencesHelper
-import com.example.sbilet.util.SbiletDate
+import com.example.sbilet.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -142,7 +141,11 @@ class BusViewModel @Inject constructor(
         if (busQuery != null) {
             _fromLocation.postValue(busQuery.from)
             _toLocation.postValue(busQuery.to)
-            _sBiletDepartureDate.postValue(busQuery.date to getDateType(busQuery.date))
+            if (busQuery.date.isLessThan(sBiletDateToday)) {
+                _sBiletDepartureDate.postValue(sBiletDateTomorrow to getDateType(sBiletDateTomorrow))
+            } else {
+                _sBiletDepartureDate.postValue(busQuery.date to getDateType(busQuery.date))
+            }
         } else {
             _fromLocation.postValue(null)
             _toLocation.postValue(null)

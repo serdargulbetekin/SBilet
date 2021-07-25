@@ -30,7 +30,7 @@ fun Activity.showDatePickerDialog(
             else if (
                 instance.get(Calendar.YEAR) == year &&
                 instance.get(Calendar.MONTH) == month &&
-                instance.get(Calendar.DAY_OF_MONTH)+1 == day
+                instance.get(Calendar.DAY_OF_MONTH) + 1 == day
             ) DateType.TOMORROW
             else DateType.NONE
 
